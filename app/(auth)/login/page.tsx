@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { Input, Button } from '@nextui-org/react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -8,22 +9,27 @@ import { API_URL } from '@/constants';
 
 export default function LoginPage() {
   const router = useRouter();
+  const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setSubmitting(true);
     const formData = new FormData(e.currentTarget);
     const authData = {
       userEmail: formData.get('userEmail'),
       userPassword: formData.get('userPassword'),
     };
     try {
-      const { data } = await axios.post(`${API_URL}/auth/login`, authData, {
+      const response = await axios.post(`${API_URL}/auth/login`, authData, {
         withCredentials: true,
       });
-      console.log(data);
-      router.push('/dashboard');
+      if (response.status === 201) {
+        router.push('/dashboard');
+      }
     } catch (error) {
       console.error(error);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -35,8 +41,8 @@ export default function LoginPage() {
         <Input label="Contraseña" type="password" name="userPassword" isRequired size="sm" />
       </div>
       <div className="flex flex-col items-center gap-2 mt-4">
-        <Button color="primary" type="submit">
-          Iniciar Sesión
+        <Button color="primary" type="submit" disabled={submitting}>
+          {submitting ? 'Enviando...' : 'Iniciar Sesión'}
         </Button>
         <p className="text-white">
           ¿No tienes cuenta?{' '}

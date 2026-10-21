@@ -1,8 +1,13 @@
-export default function DashboardPage() {
+import EmployeesLocation from './_components/employees-location';
+
+export default function DashboardPage({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
   return (
-    <div className="h-full">
-      <p>Hola soy section 1</p>
-      <p>Hola soy section 2</p>
+    <div className="h-full w-8/12">
+      <EmployeesLocation store={searchParams?.store} />
     </div>
   );
 }

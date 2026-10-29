@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { cookies } from 'next/headers';
-import { API_URL, TOKEN_NAME } from '@/constants';
+import { API_URL } from '@/constants';
 import { Employee } from '@/entities';
+import { authHeaders } from '@/helpers/authHeaders';
 import EmployeeLocationCard from './employee-location-card';
 
 export default async function EmployeesLocation({
@@ -17,20 +17,15 @@ export default async function EmployeesLocation({
     );
   }
 
-  const cookieStore = cookies();
-  const token = cookieStore.get(TOKEN_NAME)?.value;
-  const headers = token
-    ? { Authorization: `Bearer ${token}` }
-    : {};
-
   let data: Employee[] = [];
   try {
     const response = await axios.get<Employee[]>(
       `${API_URL}/employees/location/${store}`,
-      { headers }
+      { headers: authHeaders() }
     );
     data = response.data;
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.digest === 'DYNAMIC_SERVER_USAGE') throw error;
     console.error('Error fetching employees by location', error);
   }
 

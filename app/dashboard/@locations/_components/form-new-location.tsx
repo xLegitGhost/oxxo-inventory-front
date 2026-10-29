@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { Input, Button } from '@nextui-org/react';
 import { API_URL } from '@/constants';
 import { Manager, Location } from '@/entities';
@@ -18,11 +17,17 @@ export default async function FormNewLocation({ store }: FormNewLocationProps) {
 
   try {
     const [resManagers, resLocations] = await Promise.all([
-      axios.get<Manager[]>(`${API_URL}/managers`, { headers: authHeaders() }),
-      axios.get<Location[]>(`${API_URL}/locations`, { headers: authHeaders() }),
+      fetch(`${API_URL}/managers`, {
+        headers: authHeaders(),
+        next: { tags: ['dashboard:managers'] },
+      }),
+      fetch(`${API_URL}/locations`, {
+        headers: authHeaders(),
+        next: { tags: ['dashboard:locations'] },
+      }),
     ]);
-    managers = resManagers.data ?? [];
-    locations = resLocations.data ?? [];
+    if (resManagers.ok) managers = await resManagers.json();
+    if (resLocations.ok) locations = await resLocations.json();
   } catch (error: any) {
     if (error?.digest === 'DYNAMIC_SERVER_USAGE') throw error;
     console.error('Error fetching data for new location form', error);

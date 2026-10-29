@@ -2,7 +2,7 @@ import { cache } from 'react';
 import { cookies } from 'next/headers';
 import { TOKEN_NAME } from '@/constants';
 
-export const authHeaders = cache(() => {
+export const authHeaders = cache((): Record<string, string> => {
   const cookieStore = cookies();
   const token = cookieStore.get(TOKEN_NAME)?.value;
   return token ? { Authorization: `Bearer ${token}` } : {};

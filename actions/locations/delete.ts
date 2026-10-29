@@ -1,7 +1,6 @@
 'use server';
 
-import axios from 'axios';
-import { revalidatePath } from 'next/cache';
+import { revalidateTag } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { API_URL } from '@/constants';
 import { authHeaders } from '@/helpers/authHeaders';
@@ -11,13 +10,19 @@ export async function deleteLocation(formData: FormData) {
   if (!locationId) return;
 
   try {
-    await axios.delete(`${API_URL}/locations/${locationId}`, {
-      headers: authHeaders(),
+    const response = await fetch(`${API_URL}/locations/${locationId}`, {
+      method: 'DELETE',
+      headers: {
+        ...authHeaders(),
+      },
     });
+
+    if (response.status === 200) {
+      revalidateTag('dashboard:locations');
+    }
   } catch (error) {
     console.error('Error deleting location:', error);
   }
 
-  revalidatePath('/dashboard');
   redirect('/dashboard');
 }

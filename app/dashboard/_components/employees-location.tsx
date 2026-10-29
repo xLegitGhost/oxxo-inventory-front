@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { API_URL } from '@/constants';
 import { Employee } from '@/entities';
 import { authHeaders } from '@/helpers/authHeaders';
@@ -19,11 +18,13 @@ export default async function EmployeesLocation({
 
   let data: Employee[] = [];
   try {
-    const response = await axios.get<Employee[]>(
-      `${API_URL}/employees/location/${store}`,
-      { headers: authHeaders() }
-    );
-    data = response.data;
+    const response = await fetch(`${API_URL}/employees/location/${store}`, {
+      headers: authHeaders(),
+      next: { tags: ['dashboard:locations:employees'] },
+    });
+    if (response.ok) {
+      data = await response.json();
+    }
   } catch (error: any) {
     if (error?.digest === 'DYNAMIC_SERVER_USAGE') throw error;
     console.error('Error fetching employees by location', error);

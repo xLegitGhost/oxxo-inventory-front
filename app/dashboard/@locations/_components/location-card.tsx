@@ -1,5 +1,4 @@
 import { Card, CardHeader, CardBody, Divider } from '@nextui-org/react';
-import axios from 'axios';
 import Link from 'next/link';
 import { API_URL } from '@/constants';
 import { Location } from '@/entities';
@@ -15,10 +14,13 @@ export default async function LocationCard({ store }: LocationCardProps) {
 
   let data: Location | null = null;
   try {
-    const response = await axios.get<Location>(`${API_URL}/locations/${store}`, {
+    const response = await fetch(`${API_URL}/locations/${store}`, {
       headers: authHeaders(),
+      next: { tags: [`dashboard:locations:${store}`, 'dashboard:locations'] },
     });
-    data = response.data;
+    if (response.ok) {
+      data = await response.json();
+    }
   } catch (error: any) {
     if (error?.digest === 'DYNAMIC_SERVER_USAGE') throw error;
     console.error('Error fetching location', error);

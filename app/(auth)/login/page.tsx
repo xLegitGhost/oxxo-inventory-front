@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { Input, Button } from '@nextui-org/react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
 import { API_URL } from '@/constants';
 
 export default function LoginPage() {
@@ -20,8 +19,13 @@ export default function LoginPage() {
       userPassword: formData.get('userPassword'),
     };
     try {
-      const response = await axios.post(`${API_URL}/auth/login`, authData, {
-        withCredentials: true,
+      const response = await fetch(`${API_URL}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(authData),
+        credentials: 'include',
       });
       if (response.status === 201) {
         router.push('/dashboard');

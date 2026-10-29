@@ -1,3 +1,6 @@
+'use client';
+
+import { usePathname } from 'next/navigation';
 import Header from './_components/header';
 import Sidebar from './_components/sidebar';
 
@@ -8,6 +11,8 @@ export default function LayoutDashboard({
   children: React.ReactNode;
   locations: React.ReactNode;
 }) {
+  const pathname = usePathname();
+
   return (
     <div className="bg-orange-200">
       <Header />
@@ -15,7 +20,7 @@ export default function LayoutDashboard({
         <Sidebar />
         <div className="flex flex-row w-11/12">
           {children}
-          {locations}
+          {pathname === '/dashboard' && locations}
         </div>
       </div>
     </div>

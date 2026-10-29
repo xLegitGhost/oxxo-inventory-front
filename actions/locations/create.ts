@@ -1,8 +1,9 @@
 'use server';
 
-import axios from 'axios';
-import { revalidatePath } from 'next/cache';
+import { revalidateTag } from 'next/cache';
+import { redirect } from 'next/navigation';
 import { API_URL } from '@/constants';
+import { Location } from '@/entities';
 import { authHeaders } from '@/helpers/authHeaders';
 
 export async function createLocation(formData: FormData) {
@@ -29,13 +30,29 @@ export async function createLocation(formData: FormData) {
 
   location.locationLatLng = locationLatLng;
 
+  let newStoreId: number | null = null;
   try {
-    await axios.post(`${API_URL}/locations`, location, {
-      headers: authHeaders(),
+    const response = await fetch(`${API_URL}/locations`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...authHeaders(),
+      },
+      body: JSON.stringify(location),
     });
+
+    if (response.status === 201) {
+      revalidateTag('dashboard:locations');
+      const data: Location = await response.json();
+      newStoreId = data.locationId;
+    }
   } catch (error) {
     console.error('Error creating location:', error);
   }
 
-  revalidatePath('/dashboard');
+  if (newStoreId) {
+    redirect(`/dashboard?store=${newStoreId}`);
+  } else {
+    redirect('/dashboard');
+  }
 }

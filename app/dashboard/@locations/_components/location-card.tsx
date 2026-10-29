@@ -34,6 +34,15 @@ export default async function LocationCard({ store }: LocationCardProps) {
       ? data.manager?.managerFullName
       : data.manager ?? 'Sin manager';
 
+  const managerId =
+    typeof data.manager === 'object'
+      ? data.manager?.managerId
+      : data.manager;
+
+  const managerHref = managerId
+    ? `/dashboard/managers/${managerId}`
+    : '/dashboard/managers';
+
   return (
     <Card className="w-full">
       <CardHeader>
@@ -45,7 +54,7 @@ export default async function LocationCard({ store }: LocationCardProps) {
       <CardBody className="flex flex-col gap-3">
         <p className="w-full text-sm">
           <b>Manager:</b>{' '}
-          <Link href="/dashboard/managers">
+          <Link href={managerHref}>
             <span className="underline text-orange-700 hover:text-orange-900 font-semibold">
               {managerName}
             </span>

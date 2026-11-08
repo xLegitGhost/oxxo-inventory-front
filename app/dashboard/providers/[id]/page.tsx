@@ -1,9 +1,12 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { Card, CardHeader, CardBody, Divider } from '@nextui-org/react';
 import { API_URL } from '@/constants';
 import { Provider } from '@/entities';
 import { authHeaders } from '@/helpers/authHeaders';
+import ProviderCard from '../_components/provider-card';
+import FormUpdateProvider from '../_components/form-update-provider';
+import DeleteProvider from '../_components/delete-provider';
+import ProductCard from '@/app/dashboard/products/_components/product-card';
 
 export default async function ProviderDetailPage({
   params,
@@ -29,44 +32,46 @@ export default async function ProviderDetailPage({
   }
 
   return (
-    <div className="flex flex-col items-center w-full p-8 gap-6">
-      <Card className="w-full max-w-2xl bg-white shadow-md">
-        <CardHeader className="justify-center">
-          <h1 className="text-3xl font-bold text-center">
-            {provider.providerName}
-          </h1>
-        </CardHeader>
-        <Divider />
-        <CardBody className="flex flex-col gap-4 p-6">
-          <p>
-            <b>Correo electrónico:</b> {provider.providerEmail}
-          </p>
-          <p>
-            <b>Teléfono:</b> {provider.providerPhoneNumber}
-          </p>
-          <Divider />
-          <h2 className="text-xl font-bold">Productos suministrados:</h2>
+    <div className="flex flex-col h-[90vh] p-8 gap-6 w-full overflow-y-auto">
+      <div className="flex flex-row items-center justify-between">
+        <Link
+          href="/dashboard/providers"
+          className="text-orange-600 underline font-semibold hover:text-orange-800"
+        >
+          ← Volver a proveedores
+        </Link>
+        <DeleteProvider provider={provider} />
+      </div>
+
+      <div className="flex flex-row flex-wrap gap-6 items-center">
+        <ProviderCard provider={provider} />
+        <FormUpdateProvider provider={provider} />
+      </div>
+
+      <div className="w-[85vw] h-[2px] bg-orange-900 my-2" />
+
+      <div className="flex flex-col gap-4">
+        <h2 className="text-2xl font-bold text-neutral-800">
+          Productos suministrados ({provider.products?.length ?? 0})
+        </h2>
+        <div className="flex flex-row flex-wrap gap-6">
           {provider.products && provider.products.length > 0 ? (
-            <ul className="list-disc pl-5 flex flex-col gap-1">
-              {provider.products.map((prod) => (
-                <li key={prod.productId}>
-                  <b>{prod.productName}</b> — ${prod.price} (Stock: {prod.countSeal})
-                </li>
-              ))}
-            </ul>
+            provider.products.map((product) => (
+              <Link
+                key={product.productId}
+                href={`/dashboard/products/${product.productId}`}
+                className="hover:scale-105 transition-transform"
+              >
+                <ProductCard product={product} />
+              </Link>
+            ))
           ) : (
-            <p className="text-neutral-500">
+            <p className="text-neutral-500 font-semibold">
               Este proveedor no tiene productos registrados.
             </p>
           )}
-        </CardBody>
-      </Card>
-      <Link
-        href="/dashboard/providers"
-        className="text-orange-600 underline font-semibold hover:text-orange-800"
-      >
-        ← Volver a proveedores
-      </Link>
+        </div>
+      </div>
     </div>
   );
 }

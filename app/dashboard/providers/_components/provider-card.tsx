@@ -2,8 +2,16 @@ import { Card, CardHeader, CardBody, Divider } from '@nextui-org/react';
 import { Provider } from '@/entities';
 
 export default function ProviderCard({ provider }: { provider: Provider }) {
+  const productCount = provider.products?.length ?? 0;
+  const productText =
+    productCount === 0
+      ? 'No tiene productos'
+      : productCount === 1
+      ? 'Tiene 1 producto'
+      : `Tiene ${productCount} productos`;
+
   return (
-    <Card className="w-[300px] min-h-[160px] bg-white shadow-md hover:shadow-lg transition-shadow">
+    <Card className="w-[300px] min-h-[160px] max-w-[350px] bg-white shadow-md hover:shadow-lg transition-shadow">
       <CardHeader className="font-bold text-xl text-neutral-800">
         {provider.providerName}
       </CardHeader>
@@ -16,10 +24,7 @@ export default function ProviderCard({ provider }: { provider: Provider }) {
           <b>Teléfono:</b> {provider.providerPhoneNumber}
         </p>
         <p>
-          <b>Productos:</b>{' '}
-          {provider.products && provider.products.length > 0
-            ? `Tiene ${provider.products.length} producto${provider.products.length > 1 ? 's' : ''}`
-            : 'No tiene productos'}
+          <b>Productos:</b> {productText}
         </p>
       </CardBody>
     </Card>

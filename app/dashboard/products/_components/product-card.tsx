@@ -13,13 +13,11 @@ export default function ProductCard({ product }: { product: Product }) {
           <b>Precio:</b> ${product.price?.toFixed(2)}
         </p>
         <p>
-          <b>Stock:</b> {product.countSeal}
+          <b>Número de sellos:</b> {product.countSeal}
         </p>
-        {product.provider && (
-          <p>
-            <b>Proveedor:</b> {product.provider.providerName}
-          </p>
-        )}
+        <p>
+          <b>Proveedor:</b> {product.provider?.providerName ?? 'Sin proveedor'}
+        </p>
       </CardBody>
     </Card>
   );

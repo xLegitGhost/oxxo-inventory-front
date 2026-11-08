@@ -1,33 +1,61 @@
+import { Input, Button } from '@nextui-org/react';
+import { LuDollarSign } from 'react-icons/lu';
 import { API_URL } from '@/constants';
-import { Product } from '@/entities';
+import { Provider } from '@/entities';
 import { authHeaders } from '@/helpers/authHeaders';
-import FilteredCards from './_components/filtered-cards';
+import { createProduct } from '@/actions/products/create';
+import SelectProvider from './_components/select-provider';
 
 export default async function ProductsPage() {
-  let products: Product[] = [];
+  let providers: Provider[] = [];
   try {
-    const response = await fetch(`${API_URL}/products`, {
+    const response = await fetch(`${API_URL}/providers`, {
       headers: authHeaders(),
-      next: { tags: ['dashboard:products'] },
+      next: { tags: ['dashboard:providers'] },
     });
     if (response.ok) {
-      products = await response.json();
+      providers = await response.json();
     }
   } catch (error: any) {
     if (error?.digest === 'DYNAMIC_SERVER_USAGE') throw error;
-    console.error('Error fetching products:', error);
+    console.error('Error fetching providers for create product page:', error);
   }
 
   return (
-    <div className="h-[90vh] min-h-[90vh] overflow-y-auto w-full flex flex-row">
-      <div className="w-5/12 border-r-2 border-orange-400 p-6 flex flex-col gap-6">
-        <FilteredCards products={products} />
-      </div>
-      <div className="w-7/12 p-6 flex justify-center items-center">
-        <p className="text-neutral-500 font-semibold text-lg">
-          Selecciona un producto para ver sus detalles
-        </p>
-      </div>
+    <div className="bg-orange-600 text-white rounded-md p-10 flex flex-col gap-6 w-full max-w-lg shadow-md my-6">
+      <h1 className="text-2xl font-bold text-center">Crear producto</h1>
+      <form action={createProduct} className="flex flex-col gap-4">
+        <Input
+          label="Nombre del producto"
+          placeholder="Coca-Cola 600ml"
+          name="productName"
+          isRequired
+        />
+        <Input
+          label="Precio"
+          type="number"
+          step="any"
+          placeholder="18.50"
+          name="price"
+          startContent={<LuDollarSign size={20} />}
+          isRequired
+        />
+        <Input
+          label="Número de sellos"
+          type="number"
+          placeholder="2"
+          name="countSeal"
+          isRequired
+        />
+        <SelectProvider providers={providers} />
+        <Button
+          type="submit"
+          color="primary"
+          className="font-semibold text-white mt-2"
+        >
+          Crear producto
+        </Button>
+      </form>
     </div>
   );
 }

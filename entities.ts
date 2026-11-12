@@ -1,3 +1,9 @@
+export interface User {
+  userId: string;
+  userEmail: string;
+  userRoles: string[];
+}
+
 export interface Location {
   locationId: number;
   locationName: string;
@@ -16,7 +22,7 @@ export interface Employee {
   employeeEmail: string;
   employeePhoto?: string;
   location?: Location;
-  user?: any;
+  user?: User;
 }
 
 export interface Manager {
@@ -26,7 +32,7 @@ export interface Manager {
   managerEmail: string;
   managerPhoneNumber: string;
   location?: Location;
-  user?: any;
+  user?: User;
 }
 
 export interface Product {

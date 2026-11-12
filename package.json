@@ -11,12 +11,14 @@
   "dependencies": {
     "@nextui-org/react": "^2.6.11",
     "framer-motion": "^14.2.0",
+    "generate-password": "^1.7.1",
     "next": "14.0.0",
     "react": "^18",
     "react-dom": "^18",
     "react-icons": "^5.7.0"
   },
   "devDependencies": {
+    "@types/generate-password": "^1.5.3",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

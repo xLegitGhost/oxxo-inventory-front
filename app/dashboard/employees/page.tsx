@@ -1,33 +1,40 @@
 import { API_URL } from '@/constants';
-import { Employee } from '@/entities';
+import { Employee, Location } from '@/entities';
 import authHeaders from '@/helpers/authHeaders';
-import EmployeeCard from './_components/employee-card';
-import EmployeePhotoCard from './_components/employee-photo-card';
+import ListEmployees from './_components/list-employees';
+import CreateEmployee from './_components/create-employee';
 
 export default async function EmployeesPage() {
   let employees: Employee[] = [];
+  let locations: Location[] = [];
+
   try {
-    const response = await fetch(`${API_URL}/employees`, {
-      headers: authHeaders(),
-      next: { tags: ['dashboard:employees'] },
-    });
-    if (response.ok) {
-      employees = await response.json();
+    const [employeesRes, locationsRes] = await Promise.all([
+      fetch(`${API_URL}/employees`, {
+        headers: authHeaders(),
+        next: { tags: ['dashboard:employees'] },
+      }),
+      fetch(`${API_URL}/locations`, {
+        headers: authHeaders(),
+        next: { tags: ['dashboard:locations'] },
+      }),
+    ]);
+
+    if (employeesRes.ok) {
+      employees = await employeesRes.json();
+    }
+    if (locationsRes.ok) {
+      locations = await locationsRes.json();
     }
   } catch (error: any) {
     if (error?.digest === 'DYNAMIC_SERVER_USAGE') throw error;
-    console.error('Error fetching employees:', error);
+    console.error('Error fetching employees or locations:', error);
   }
 
   return (
-    <div className="flex flex-wrap gap-4 h-[90vh] overflow-y-auto p-10">
-      {employees.map((employee: Employee) => {
-        const id = employee.id || (employee as any).employeeId;
-        if (employee.employeePhoto) {
-          return <EmployeePhotoCard key={id} employee={employee} />;
-        }
-        return <EmployeeCard key={id} employee={employee} />;
-      })}
+    <div className="relative w-full">
+      <ListEmployees employees={employees} locations={locations} />
+      <CreateEmployee stores={locations} />
     </div>
   );
 }
